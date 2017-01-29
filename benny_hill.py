@@ -7,6 +7,82 @@ import decimal
 from openal.audio import SoundSink, SoundSource
 from openal.loaders import load_wav_file
 from ewmh import EWMH
+from Tkinter import Tk, Label, Button, StringVar
+
+class GUI:
+    LABEL_TEXT = [
+        "Play some sounds"
+    ]
+    def __init__(self, master):
+        self.master = master
+        master.title("Concord")
+
+        self.label_index = 0
+        self.label_text = StringVar()
+        self.label_text.set(self.LABEL_TEXT[self.label_index])
+        self.label = Label(master, textvariable=self.label_text)
+        self.label.bind("<Button-1>", self.cycle_label_text)
+        self.label.pack()
+
+        self.sound_button = Button(master, text="Play Clint Eastwood", command=self.sound)
+        self.sound_button.pack()
+
+
+        self.sound_button1 = Button(master, text="Play npr", command=self.sound1)
+        self.sound_button1.pack()
+
+        self.sound_button2 = Button(master, text="Play Smash Mouth", command=self.sound2)
+        self.sound_button2.pack()
+
+        self.close_button = Button(master, text="Close", command=master.quit)
+        self.close_button.pack()
+
+    def sound(self):
+        data = load_wav_file("test.wav")
+        source.queue(data)
+
+        sink.play(source)
+
+        while True:
+            source.position = get_window_3d_coords(current_window).return_tup()
+            sink.update()
+
+            print("playing at %s" % str(source.position))
+
+            time.sleep(0.1)
+    
+    def sound1(self):
+        data = load_wav_file("test.wav")
+        source.queue(data)
+
+        sink.play(source)
+
+        while True:
+            source.position = get_window_3d_coords(current_window).return_tup()
+            sink.update()
+
+            print("playing at %s" % str(source.position))
+
+            time.sleep(0.1)
+
+    def sound2(self):
+        data = load_wav_file("test.wav")
+        source.queue(data)
+
+        sink.play(source)
+
+        while True:
+            source.position = get_window_3d_coords(current_window).return_tup()
+            sink.update()
+
+            print("playing at %s" % str(source.position))
+
+            time.sleep(0.1)
+
+    def cycle_label_text(self, event):
+        self.label_index += 1
+        self.label_index %= len(self.LABEL_TEXT) # wrap around
+        self.label_text.set(self.LABEL_TEXT[self.label_index])
 
 class vector():
     """ A 2D point class with basic transformation functions. """
@@ -76,7 +152,7 @@ class vector():
 
             Proof that this vector points right:
                 If H is the half plane defined by {w: <v,w> <= 0}, then H
-                is an oriented manifold with boundary. Then ∂H is oriented,
+                is an oriented manifold with boundary. Then H is oriented,
                 such that x points right if {x,v} is correctly oriented,
                 which means that x1v2 - x2v1 > 0. If x = (v2, -v1), then
                 x1v2 - x2v1 = v2^2 + v1^2 > 0, so that x points right.
@@ -190,15 +266,8 @@ if __name__ == "__main__":
     source = SoundSource(position=[0,0,0,0,1,0])
     source.looping = True
 
-    data = load_wav_file("test.wav")
-    source.queue(data)
+    root = Tk()
+    my_gui = GUI(root)
+    root.mainloop()
 
-    sink.play(source)
-
-    while True:
-        source.position = get_window_3d_coords(current_window).return_tup()
-        sink.update()
-
-        print("playing at %s" % str(source.position))
-
-        time.sleep(0.1)
+    
