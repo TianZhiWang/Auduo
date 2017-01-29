@@ -7,7 +7,7 @@ import decimal
 from openal.audio import SoundSink, SoundSource
 from openal.loaders import load_wav_file
 from ewmh import EWMH
-from Tkinter import Tk, Label, Button, StringVar
+from tkinter import Tk, Label, Button, StringVar
 
 class GUI:
     LABEL_TEXT = [
@@ -24,14 +24,14 @@ class GUI:
         self.label.bind("<Button-1>", self.cycle_label_text)
         self.label.pack()
 
-        self.sound_button = Button(master, text="Play Clint Eastwood", command=self.sound)
+        self.sound_button = Button(master, text="Clint Eastwood", command=self.sound)
         self.sound_button.pack()
 
 
-        self.sound_button1 = Button(master, text="Play npr", command=self.sound1)
+        self.sound_button1 = Button(master, text="This American Life", command=self.sound1)
         self.sound_button1.pack()
 
-        self.sound_button2 = Button(master, text="Play Smash Mouth", command=self.sound2)
+        self.sound_button2 = Button(master, text="Smash Mouth", command=self.sound2)
         self.sound_button2.pack()
 
         self.close_button = Button(master, text="Close", command=master.quit)
@@ -52,7 +52,7 @@ class GUI:
             time.sleep(0.1)
     
     def sound1(self):
-        data = load_wav_file("test.wav")
+        data = load_wav_file("thisAmericanLife.wav")
         source.queue(data)
 
         sink.play(source)
@@ -66,7 +66,7 @@ class GUI:
             time.sleep(0.1)
 
     def sound2(self):
-        data = load_wav_file("test.wav")
+        data = load_wav_file("AllStar.wav")
         source.queue(data)
 
         sink.play(source)
@@ -232,16 +232,27 @@ def convert_monitor_to_environment(monitor_coords,
     ))
 
 def get_window_3d_coords(window):
-    monitor_botright = vector(ewmh.getDesktopGeometry())
-    monitor_centre = monitor_botright/2
-
     (window_topleft, window_dimensions, window_botright) = parse_window_info(window)
+    print(window_topleft)
     window_centre = (window_topleft + window_botright)/2
+
+    # Now project our position onto real life.
+    monitor = 2 if (window_topleft[0] > 1366) else 1
+
+    if (monitor == 1):
+        monitor_topleft = vector((0,0))
+        monitor_botright = vector((1366, 918))
+    elif (monitor == 2):
+        monitor_topleft = vector((1366,0))
+        monitor_botright = vector((3633, 918))
+    else:
+        raise ValueError("BADD!")
+
+    monitor_dimensions = monitor_botright - monitor_topleft
+    monitor_centre = (monitor_botright + monitor_topleft)/2
 
     screen_coords = ((window_centre - monitor_centre)/100).reflect_y()
 
-    # Now project our position onto real life.
-    monitor = ewmh.getWmDesktop(window)
     print(monitor)
     return convert_monitor_to_environment(
             get_monitor_positions()[monitor],
@@ -249,9 +260,9 @@ def get_window_3d_coords(window):
             screen_coords
     )
 
-def get_monitor_positions(): return {1: vector((0,2)),  2: vector((0,-2)), 3: vector((2,2)) }
+def get_monitor_positions(): return { 1: vector((-1,0)),  2: vector((1,0)) }
 
-def get_monitor_orientations(): return {1: vector((0,-1)), 2: vector((0,1)),  3: vector((-1,-1))}
+def get_monitor_orientations(): return { 1: vector((1,0)), 2: vector((-1,0)) }
 
 if __name__ == "__main__":
     ewmh = EWMH()
@@ -269,5 +280,3 @@ if __name__ == "__main__":
     root = Tk()
     my_gui = GUI(root)
     root.mainloop()
-
-    
